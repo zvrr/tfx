@@ -19,10 +19,12 @@ from __future__ import division
 from __future__ import print_function
 
 import codecs
+import glob
 import locale
 import os
 import tempfile
 
+import absl
 from click import testing as click_testing
 import tensorflow as tf
 
@@ -288,11 +290,23 @@ class CliBeamEndToEndTest(tf.test.TestCase):
     self._valid_run_and_check(pipeline_name)
 
     # Infer Schema when pipeline runs for the first time.
+    all_files = glob.glob(os.getcwd() + '/*', recursive=True)  # pylint: disable=unexpected-keyword-arg
+    absl.logging.info('ZZZ: CWD:' + os.getcwd())
+    absl.logging.info('ZZZ: Files:' + str(all_files))
+
     schema_path = os.path.join(os.getcwd(), 'schema.pbtxt')
     result = self.runner.invoke(cli_group, [
         'pipeline', 'schema', '--engine', 'beam', '--pipeline_name',
         pipeline_name
     ])
+    all_files = glob.glob(os.getcwd() + '/*', recursive=True)  # pylint: disable=unexpected-keyword-arg
+    absl.logging.info('ZZZ2: CWD:' + os.getcwd())
+    absl.logging.info('ZZZ2: Files:' + str(all_files))
+    absl.logging.info('ZZZ2: result.output:' + str(result.output))
+    absl.logging.info('ZZZ2: schema_path.old:' +
+                      str(os.path.join(os.getcwd(), 'schema.pbtxt')))
+    absl.logging.info('ZZZ2: schema_path.new:' + str(schema_path))
+
     self.assertIn('CLI', result.output)
     self.assertIn('Getting latest schema.', result.output)
     self.assertTrue(tf.io.gfile.exists(schema_path))
