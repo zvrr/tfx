@@ -720,6 +720,9 @@ class Executor(base_executor.BaseExecutor):
               tft_beam.analysis_graph_builder.get_analysis_cache_entry_keys(
                   self._preprocessing_fn, self._feature_spec_or_typespec,
                   dataset_keys_list))
+          absl.logging.info(
+              'Reading the following analysis cache entry keys: %s',
+              read_cache_kwargs['cache_entry_keys'])
         input_cache = (
             pipeline
             | 'ReadCache' >> analyzer_cache.ReadAnalysisCacheFromFS(
